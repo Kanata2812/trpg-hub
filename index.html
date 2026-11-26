@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#171622">
+<title>TRPG HUB — 創る・遊ぶ・つながる</title>
+<style>
+:root{--bg:#101018;--panel:#191925;--panel2:#202031;--line:#303044;--text:#f5f3ff;--muted:#aaa7bd;--accent:#a78bfa;--accent2:#7c5ce7;--good:#65d6a5;--bad:#ff8585}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 15% 0%,#292044 0,transparent 38%),var(--bg);color:var(--text);font:15px/1.6 system-ui,-apple-system,"Noto Sans JP",sans-serif}
+button,input,textarea,select{font:inherit}button{cursor:pointer;border:0;border-radius:12px;padding:10px 15px;background:var(--accent);color:#171322;font-weight:700}button.secondary{background:var(--panel2);color:var(--text);border:1px solid var(--line)}button:disabled{opacity:.5;cursor:not-allowed}
+header{position:sticky;top:0;z-index:5;background:#11101beF;backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.nav{max-width:1180px;margin:auto;padding:14px 20px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}.brand{font-size:21px;font-weight:900;letter-spacing:.04em}.brand span{color:var(--accent)}.tagline{font-size:12px;color:var(--muted)}nav{display:flex;gap:7px;flex:1;flex-wrap:wrap}nav button{background:transparent;color:var(--muted);padding:8px 11px}nav button.active,nav button:hover{background:var(--panel2);color:var(--text)}.autharea{display:flex;gap:8px;align-items:center}
+main{max-width:1180px;margin:34px auto;padding:0 20px}.hero{padding:44px 34px;border:1px solid #51436e;border-radius:24px;background:linear-gradient(120deg,#28203e,#191925 70%);margin-bottom:25px}.hero h1{font-size:clamp(30px,5vw,48px);line-height:1.2;margin:0 0 12px}.hero p{color:var(--muted);max-width:650px}.eyebrow{color:#c4b5fd;font-weight:800;letter-spacing:.13em;font-size:12px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;min-width:0}.card h3{margin:0 0 7px}.muted{color:var(--muted)}.small{font-size:12px}.sectionhead{display:flex;align-items:end;justify-content:space-between;gap:12px;margin:28px 0 14px;flex-wrap:wrap}.sectionhead h2{margin:0;font-size:23px}.toolbar{display:flex;gap:8px;flex-wrap:wrap}.field{display:grid;gap:6px;margin:12px 0}.field label{font-size:13px;color:var(--muted)}input,textarea,select{width:100%;padding:11px 12px;border-radius:11px;border:1px solid var(--line);background:#11111b;color:var(--text);outline:none}input:focus,textarea:focus,select:focus{border-color:var(--accent)}textarea{min-height:110px;resize:vertical}.formrow{display:grid;grid-template-columns:1fr 1fr;gap:12px}.itemimg{width:100%;height:160px;object-fit:cover;border-radius:12px;background:#29283a;margin-bottom:12px}.pill{display:inline-block;border:1px solid var(--line);border-radius:99px;padding:3px 9px;font-size:11px;color:#d6ccff}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.empty{padding:32px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:16px}.hidden{display:none!important}.status{padding:10px 13px;border-radius:12px;margin:12px 0;background:#26223a;color:#d9ceff}.status.error{background:#3a2028;color:#ffc4c4}.status.ok{background:#18352d;color:#b8ffe0}.postbody{white-space:pre-wrap;overflow-wrap:anywhere}.price{font-size:20px;font-weight:800;color:#d7c8ff}.comment{border-top:1px solid var(--line);padding-top:10px;margin-top:10px}.footer{color:var(--muted);text-align:center;padding:40px 20px;font-size:12px}
+dialog{background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:18px;width:min(480px,calc(100% - 28px));padding:24px}dialog::backdrop{background:#0009}.close{float:right;background:transparent;color:var(--muted);padding:0 8px}
+@media(max-width:650px){.nav{gap:10px}.brandwrap{flex:1}nav{order:3;flex-basis:100%;overflow:auto;flex-wrap:nowrap}.autharea{margin-left:auto}.hero{padding:30px 20px}.formrow{grid-template-columns:1fr}main{margin-top:20px}}
+</style>
+</head>
+<body>
+<header><div class="nav">
+ <div class="brandwrap"><div class="brand">TRPG <span>HUB</span></div><div class="tagline">創る・遊ぶ・つながる</div></div>
+ <nav id="nav">
+  <button class="active" data-page="home">ホーム</button><button data-page="scenarios">シナリオ</button><button data-page="market">ショップ</button><button data-page="forum">交流掲示板</button>
+ </nav>
+ <div class="autharea"><span id="userLabel" class="small muted">未ログイン</span><button id="authBtn" class="secondary">ログイン</button></div>
+</div></header>
+<main>
+ <div id="notice" class="status hidden"></div>
+ <section id="homePage">
+  <div class="hero"><div class="eyebrow">TABLETOP ROLE-PLAYING COMMUNITY</div><h1>物語をつくる人も、<br>遊ぶ人も。</h1><p>シナリオを共有し、素材を探し、仲間と語り合う。TRPGをもっと自由に楽しむためのコミュニティ。</p><div class="actions"><button data-goto="scenarios">シナリオを探す</button><button class="secondary" data-goto="forum">交流掲示板へ</button></div></div>
+  <div class="grid"><div class="card"><span class="pill">CREATE</span><h3>シナリオを共有</h3><p class="muted">自作シナリオやセッションのアイデアを投稿。</p></div><div class="card"><span class="pill">MARKET</span><h3>素材を見つける</h3><p class="muted">立ち絵や資料など、TRPG向けアイテムを紹介。</p></div><div class="card"><span class="pill">COMMUNITY</span><h3>仲間とつながる</h3><p class="muted">質問や感想、卓募集などを掲示板で交流。</p></div></div>
+  <div class="sectionhead"><h2>新着シナリオ</h2><button class="secondary" data-goto="scenarios">すべて見る</button></div><div id="homeScenarios" class="grid"></div>
+ </section>
+ <section id="scenariosPage" class="hidden">
+  <div class="sectionhead"><div><div class="eyebrow">SCENARIO LIBRARY</div><h2>シナリオ</h2></div><button id="newScenarioBtn">＋ シナリオを投稿</button></div>
+  <div class="toolbar"><input id="scenarioSearch" placeholder="タイトル・システムで検索"></div><div id="scenarioList" class="grid" style="margin-top:16px"></div>
+ </section>
+ <section id="marketPage" class="hidden">
+  <div class="sectionhead"><div><div class="eyebrow">CREATOR MARKET</div><h2>ショップ</h2></div><button id="newItemBtn">＋ 商品を出品</button></div>
+  <div class="toolbar"><input id="marketSearch" placeholder="商品名で検索"></div><div id="marketList" class="grid" style="margin-top:16px"></div>
+  <p class="muted small">※現在は出品情報の掲載・閲覧までの試作版です。決済・注文・売上分配には対応していません。</p>
+ </section>
+ <section id="forumPage" class="hidden">
+  <div class="sectionhead"><div><div class="eyebrow">COMMUNITY BOARD</div><h2>交流掲示板</h2></div><button id="newPostBtn">＋ トピックを投稿</button></div>
+  <div class="toolbar"><input id="forumSearch" placeholder="掲示板を検索"></div><div id="forumList" style="display:grid;gap:12px;margin-top:16px"></div>
+ </section>
+</main>
+<footer class="footer">TRPG HUB — 創る・遊ぶ・つながる<br>本サイトは開発中の試作版です。</footer>
+
+<dialog id="authDialog"><button class="close" data-close="authDialog">✕</button><h2 id="authTitle">ログイン</h2><div class="field"><label>メールアドレス</label><input id="authEmail" type="email" autocomplete="email"></div><div class="field"><label>パスワード</label><input id="authPassword" type="password" autocomplete="current-password"></div><div class="field" id="nameField" hidden><label>表示名</label><input id="authName" maxlength="30"></div><div class="actions"><button id="authSubmit">ログイン</button><button class="secondary" id="toggleAuth">新規登録はこちら</button></div><p class="small muted">登録確認メールが届く場合があります。</p></dialog>
+<dialog id="editorDialog"><button class="close" data-close="editorDialog">✕</button><h2 id="editorTitle">投稿</h2><form id="editorForm"><input type="hidden" id="editorType"><div class="field"><label>タイトル</label><input id="entryTitle" required maxlength="100"></div><div class="field" id="systemField"><label>ゲームシステム</label><input id="entrySystem" placeholder="クトゥルフ神話TRPG"></div><div class="field" id="priceField" hidden><label>価格（円・掲載用）</label><input id="entryPrice" type="number" min="0" value="0"></div><div class="field"><label>説明・本文</label><textarea id="entryDescription" required maxlength="10000"></textarea></div><div class="field"><label>画像（任意・5MBまで）</label><input id="entryImage" type="file" accept="image/*"></div><div class="actions"><button type="submit">投稿する</button><button type="button" class="secondary" data-close="editorDialog">キャンセル</button></div></form></dialog>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* Supabase connection settings: public URL and publishable key only. */
+const SUPABASE_URL = "https://miybnjzxgfhmnrhuwyle.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_2hTMofREIGlornefa73DHA_plYuwOmy";
+const IMAGE_BUCKET = "TRPG-HUB-IMAGES";
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+let currentUser = null, authMode = "login";
+const $ = id => document.getElementById(id);
+function notice(msg,type="ok"){const n=$("notice");n.textContent=msg;n.className="status "+(type==="error"?"error":"ok");n.classList.remove("hidden");window.scrollTo({top:0,behavior:"smooth"});setTimeout(()=>n.classList.add("hidden"),6500)}
+function esc(s=""){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function page(name){["home","scenarios","market","forum"].forEach(p=>$(p+"Page").classList.toggle("hidden",p!==name));document.querySelectorAll("nav [data-page]").forEach(b=>b.classList.toggle("active",b.dataset.page===name));if(name==="scenarios")loadScenarios();if(name==="market")loadItems();if(name==="forum")loadForum()}
+document.querySelectorAll("[data-page]").forEach(b=>b.onclick=()=>page(b.dataset.page));
+document.querySelectorAll("[data-goto]").forEach(b=>b.onclick=()=>page(b.dataset.goto));
+document.querySelectorAll("[data-close]").forEach(b=>b.onclick=()=>$(b.dataset.close).close());
+async function refreshUser(){const {data:{user}}=await db.auth.getUser();currentUser=user;$("userLabel").textContent=user?(user.user_metadata?.display_name||user.email):"未ログイン";$("authBtn").textContent=user?"ログアウト":"ログイン"}
+$("authBtn").onclick=async()=>{if(currentUser){await db.auth.signOut();await refreshUser();notice("ログアウトしました");}else{$("authDialog").showModal()}};
+$("toggleAuth").onclick=()=>{authMode=authMode==="login"?"signup":"login";$("authTitle").textContent=authMode==="login"?"ログイン":"新規登録";$("authSubmit").textContent=authMode==="login"?"ログイン":"登録する";$("toggleAuth").textContent=authMode==="login"?"新規登録はこちら":"ログインはこちら";$("nameField").hidden=authMode!=="signup"};
+$("authSubmit").onclick=async()=>{const email=$("authEmail").value.trim(),password=$("authPassword").value;if(!email||!password)return notice("メールアドレスとパスワードを入力してね", "error");let r;if(authMode==="login")r=await db.auth.signInWithPassword({email,password});else r=await db.auth.signUp({email,password,options:{data:{display_name:$("authName").value.trim()||"探索者"}}});if(r.error)return notice(r.error.message,"error");$("authDialog").close();await refreshUser();notice(authMode==="login"?"ログインしました":"登録を受け付けました。確認メールが届いた場合はメールを確認してね。")}
+db.auth.onAuthStateChange(()=>refreshUser());
+function requireLogin(){if(!currentUser){$("authDialog").showModal();notice("投稿にはログインが必要だよ","error");return false}return true}
+async function uploadImage(file){if(!file)return null;if(file.size>5*1024*1024)throw new Error("画像は5MB以下にしてね");if(!file.type.startsWith("image/"))throw new Error("画像ファイルを選んでね");const ext=(file.name.split(".").pop()||"png").replace(/[^a-z0-9]/gi,"").toLowerCase();const path=`${currentUser.id}/${crypto.randomUUID()}.${ext}`;const {error}=await db.storage.from(IMAGE_BUCKET).upload(path,file,{upsert:false,contentType:file.type});if(error)throw error;return db.storage.from(IMAGE_BUCKET).getPublicUrl(path).data.publicUrl}
+function openEditor(type){if(!requireLogin())return;$("editorType").value=type;$("editorTitle").textContent=type==="scenario"?"シナリオを投稿":type==="item"?"商品を出品":"トピックを投稿";$("systemField").hidden=type!=="scenario";$("priceField").hidden=type!=="item";$("entryImage").value="";$("editorDialog").showModal()}
+$("newScenarioBtn").onclick=()=>openEditor("scenario");$("newItemBtn").onclick=()=>openEditor("item");$("newPostBtn").onclick=()=>openEditor("post");
+$("editorForm").onsubmit=async e=>{e.preventDefault();if(!requireLogin())return;const type=$("editorType").value;const title=$("entryTitle").value.trim(),description=$("entryDescription").value.trim(),file=$("entryImage").files[0];try{let image_url=await uploadImage(file);let table,payload;if(type==="scenario"){table="scenarios";payload={user_id:currentUser.id,title,description,system:$("entrySystem").value.trim()||"クトゥルフ神話TRPG",image_url}}else if(type==="item"){table="marketplace_items";payload={user_id:currentUser.id,title,description,price:Number($("entryPrice").value)||0,image_url}}else{table="forum_posts";payload={user_id:currentUser.id,title,content:description}}const {error}=await db.from(table).insert(payload);if(error)throw error;$("editorDialog").close();$("editorForm").reset();notice("投稿しました！");if(type==="scenario")loadScenarios();if(type==="item")loadItems();if(type==="post")loadForum();}catch(err){notice("投稿できませんでした: "+err.message,"error")}};
+function imageHtml(url){return url?`<img class="itemimg" src="${esc(url)}" alt="">`:""}
+function empty(msg){return `<div class="empty">${esc(msg)}</div>`}
+async function loadScenarios(){const q=$("scenarioSearch")?.value?.trim()||"";let req=db.from("scenarios").select("*").order("created_at",{ascending:false}).limit(60);if(q)req=req.or(`title.ilike.%${q}%,system.ilike.%${q}%`);const {data,error}=await req;const html=error?empty("読み込みエラー: "+error.message):(data?.length?data.map(x=>`<article class="card">${imageHtml(x.image_url)}<span class="pill">${esc(x.system)}</span><h3>${esc(x.title)}</h3><p class="muted postbody">${esc(x.description)}</p><div class="small muted">${new Date(x.created_at).toLocaleString("ja-JP")}</div></article>`).join(""):empty("まだシナリオがありません。最初の投稿をしてみよう！"));$("scenarioList").innerHTML=html;$("homeScenarios").innerHTML=(data||[]).slice(0,3).map(x=>`<article class="card"><h3>${esc(x.title)}</h3><span class="pill">${esc(x.system)}</span><p class="muted">${esc(x.description.slice(0,100))}</p></article>`).join("")||empty("シナリオを募集中！")}
+async function loadItems(){const q=$("marketSearch")?.value?.trim()||"";let req=db.from("marketplace_items").select("*").order("created_at",{ascending:false}).limit(60);if(q)req=req.ilike("title",`%${q}%`);const {data,error}=await req;$("marketList").innerHTML=error?empty("読み込みエラー: "+error.message):(data?.length?data.map(x=>`<article class="card">${imageHtml(x.image_url)}<h3>${esc(x.title)}</h3><p class="price">${Number(x.price).toLocaleString("ja-JP")}円</p><p class="muted postbody">${esc(x.description)}</p><div class="small muted">${new Date(x.created_at).toLocaleString("ja-JP")}</div></article>`).join(""):empty("商品はまだありません。最初の出品をしてみよう！"))}
+async function loadForum(){const q=$("forumSearch")?.value?.trim()||"";let req=db.from("forum_posts").select("*").order("created_at",{ascending:false}).limit(60);if(q)req=req.or(`title.ilike.%${q}%,content.ilike.%${q}%`);const {data,error}=await req;if(error){$("forumList").innerHTML=empty("読み込みエラー: "+error.message);return}if(!data?.length){$("forumList").innerHTML=empty("投稿はまだありません。最初のトピックを作ろう！");return}$("forumList").innerHTML=data.map(x=>`<article class="card"><h3>${esc(x.title)}</h3><p class="postbody">${esc(x.content)}</p><div class="small muted">${new Date(x.created_at).toLocaleString("ja-JP")}</div><div class="commentarea" id="comments-${x.id}"><button class="secondary small" onclick="loadComments('${x.id}')">コメントを見る</button></div><div class="actions"><button class="secondary small" onclick="commentOn('${x.id}')">コメントする</button></div></article>`).join("")}
+window.loadComments=async id=>{const {data,error}=await db.from("comments").select("*").eq("post_id",id).order("created_at");const el=$("comments-"+id);if(error){el.innerHTML=`<p class="muted small">${esc(error.message)}</p>`;return}el.innerHTML=(data||[]).map(c=>`<div class="comment postbody">${esc(c.content)}<div class="small muted">${new Date(c.created_at).toLocaleString("ja-JP")}</div></div>`).join("")||'<p class="muted small">コメントはまだありません。</p>'};
+window.commentOn=async id=>{if(!requireLogin())return;const content=prompt("コメントを入力してね");if(!content?.trim())return;const {error}=await db.from("comments").insert({post_id:id,user_id:currentUser.id,content:content.trim()});if(error)notice("コメントできませんでした: "+error.message,"error");else{notice("コメントしました");loadComments(id)}};
+$("scenarioSearch").oninput=loadScenarios;$("marketSearch").oninput=loadItems;$("forumSearch").oninput=loadForum;
+(async()=>{await refreshUser();await loadScenarios()})();
+</script>
+</body></html>
