@@ -67,7 +67,18 @@ const db = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 let currentUser = null, authMode = "login";
 const $ = id => document.getElementById(id);
 function notice(msg,type="ok"){const n=$("notice");n.textContent=msg;n.className="status "+(type==="error"?"error":"ok");n.classList.remove("hidden");window.scrollTo({top:0,behavior:"smooth"});setTimeout(()=>n.classList.add("hidden"),6500)}
-function esc(s=""){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function esc(function imageHtml(url){
+  if(!url) return "";
+
+  return `
+    <img
+      src="${esc(url)}"
+      alt=""
+      loading="lazy"
+      style="width:100%;max-height:220px;object-fit:cover;border-radius:12px;margin-bottom:12px;"
+    >
+  `;
+}s=""){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function page(name){["home","scenarios","market","forum"].forEach(p=>$(p+"Page").classList.toggle("hidden",p!==name));document.querySelectorAll("nav [data-page]").forEach(b=>b.classList.toggle("active",b.dataset.page===name));if(name==="scenarios")loadScenarios();if(name==="market")loadItems();if(name==="forum")loadForum()}
 document.querySelectorAll("[data-page]").forEach(b=>b.onclick=()=>page(b.dataset.page));
 document.querySelectorAll("[data-goto]").forEach(b=>b.onclick=()=>page(b.dataset.goto));
