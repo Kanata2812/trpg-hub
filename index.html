@@ -22,7 +22,11 @@ dialog{background:var(--panel);color:var(--text);border:1px solid var(--line);bo
  <nav id="nav">
   <button class="active" data-page="home">ホーム</button><button data-page="scenarios">シナリオ</button><button data-page="market">ショップ</button><button data-page="forum">交流掲示板</button>
  </nav>
- <div class="autharea"><span id="userLabel" class="small muted">未ログイン</span><button id="authBtn" class="secondary">ログイン</button></div>
+ <div class="autharea">
+  <span id="walletLabel" class="pill">💰 --- $</span>
+  <span id="userLabel" class="small muted">未ログイン</span>
+  <button id="authBtn" class="secondary">ログイン</button>
+</div>
 </div></header>
 <main>
  <div id="notice" class="status hidden"></div>
@@ -48,7 +52,10 @@ dialog{background:var(--panel);color:var(--text);border:1px solid var(--line);bo
 <footer class="footer">TRPG HUB — 創る・遊ぶ・つながる<br>本サイトは開発中の試作版です。</footer>
 
 <dialog id="authDialog"><button class="close" data-close="authDialog">✕</button><h2 id="authTitle">ログイン</h2><div class="field"><label>メールアドレス</label><input id="authEmail" type="email" autocomplete="email"></div><div class="field"><label>パスワード</label><input id="authPassword" type="password" autocomplete="current-password"></div><div class="field" id="nameField" hidden><label>表示名</label><input id="authName" maxlength="30"></div><div class="actions"><button id="authSubmit">ログイン</button><button class="secondary" id="toggleAuth">新規登録はこちら</button></div><p class="small muted">登録確認メールが届く場合があります。</p></dialog>
-<dialog id="editorDialog"><button class="close" data-close="editorDialog">✕</button><h2 id="editorTitle">投稿</h2><form id="editorForm"><input type="hidden" id="editorType"><div class="field"><label id="entryTitleLabel">タイトル</label><input id="entryTitle" required maxlength="100"></div><div class="field" id="systemField"><label>ゲームシステム</label><input id="entrySystem" placeholder="クトゥルフ神話TRPG"></div><div class="field" id="priceField" hidden><label>価格（円・掲載用）</label><input id="entryPrice" type="number" min="0" value="0"></div><div class="field"><label id="entryDescriptionLabel">説明・本文</label><textarea id="entryDescription" required maxlength="10000"></textarea></div><div class="field" id="imageField"><label>画像（任意・5MBまで）</label><input id="entryImage" type="file" accept="image/*"></div><div class="actions"><button type="submit">投稿する</button><button type="button" class="secondary" data-close="editorDialog">キャンセル</button></div></form></dialog>
+<dialog id="editorDialog"><button class="close" data-close="editorDialog">✕</button><h2 id="editorTitle">投稿</h2><form id="editorForm"><input type="hidden" id="editorType"><div class="field"><label id="entryTitleLabel">タイトル</label><input id="entryTitle" required maxlength="100"></div><div class="field" id="systemField"><label>ゲームシステム</label><input id="entrySystem" placeholder="クトゥルフ神話TRPG"></div><div class="field" id="priceField" hidden>
+  <label>販売価格（$）</label>
+  <input id="entryPrice" type="number" min="1" step="1" value="100" required>
+</div><p class="muted small">※サイト内通貨$で取引します。販売手数料は0%で、売上の100%が出品者に入ります。</p><div class="field"><label id="entryDescriptionLabel">説明・本文</label><textarea id="entryDescription" required maxlength="10000"></textarea></div><div class="field" id="imageField"><label>画像（任意・5MBまで）</label><input id="entryImage" type="file" accept="image/*"></div><div class="actions"><button type="submit">投稿する</button><button type="button" class="secondary" data-close="editorDialog">キャンセル</button></div></form></dialog>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 /* Supabase connection settings: public URL and publishable key only. */
@@ -65,7 +72,40 @@ function page(name){["home","scenarios","market","forum"].forEach(p=>$(p+"Page")
 document.querySelectorAll("[data-page]").forEach(b=>b.onclick=()=>page(b.dataset.page));
 document.querySelectorAll("[data-goto]").forEach(b=>b.onclick=()=>page(b.dataset.goto));
 document.querySelectorAll("[data-close]").forEach(b=>b.onclick=()=>$(b.dataset.close).close());
-async function refreshUser(){const {data:{user}}=await db.auth.getUser();currentUser=user;$("userLabel").textContent=user?(user.user_metadata?.display_name||user.email):"未ログイン";$("authBtn").textContent=user?"ログアウト":"ログイン"}
+async function refreshUser(){
+  const {data:{user}}=await db.auth.getUser();
+  currentUser=user;
+
+  $("userLabel").textContent=user
+    ? (user.user_metadata?.display_name||user.email)
+    : "未ログイン";
+
+  $("authBtn").textContent=user?"ログアウト":"ログイン";
+
+  await refreshWallet();
+}
+
+async function refreshWallet(){
+  if(!currentUser){
+    $("walletLabel").textContent="💰 --- $";
+    return;
+  }
+
+  const {data,error}=await db
+    .from("wallet_balances")
+    .select("balance")
+    .eq("user_id",currentUser.id)
+    .maybeSingle();
+
+  if(error){
+    $("walletLabel").textContent="💰 読込エラー";
+    console.error(error);
+    return;
+  }
+
+  $("walletLabel").textContent=
+    "💰 "+Number(data?.balance??0).toLocaleString("ja-JP")+" $";
+}
 $("authBtn").onclick=async()=>{if(currentUser){await db.auth.signOut();await refreshUser();notice("ログアウトしました");}else{$("authDialog").showModal()}};
 $("toggleAuth").onclick=()=>{authMode=authMode==="login"?"signup":"login";$("authTitle").textContent=authMode==="login"?"ログイン":"新規登録";$("authSubmit").textContent=authMode==="login"?"ログイン":"登録する";$("toggleAuth").textContent=authMode==="login"?"新規登録はこちら":"ログインはこちら";$("nameField").hidden=authMode!=="signup"};
 $("authSubmit").onclick=async()=>{const email=$("authEmail").value.trim(),password=$("authPassword").value;if(!email||!password)return notice("メールアドレスとパスワードを入力してね", "error");let r;if(authMode==="login")r=await db.auth.signInWithPassword({email,password});else r=await db.auth.signUp({email,password,options:{data:{display_name:$("authName").value.trim()||"探索者"}}});if(r.error)return notice(r.error.message,"error");$("authDialog").close();await refreshUser();notice(authMode==="login"?"ログインしました":"登録を受け付けました。確認メールが届いた場合はメールを確認してね。")}
@@ -74,7 +114,79 @@ function requireLogin(){if(!currentUser){$("authDialog").showModal();notice("投
 async function uploadImage(file){if(!file)return null;if(file.size>5*1024*1024)throw new Error("画像は5MB以下にしてね");if(!file.type.startsWith("image/"))throw new Error("画像ファイルを選んでね");const ext=(file.name.split(".").pop()||"png").replace(/[^a-z0-9]/gi,"").toLowerCase();const path=`${currentUser.id}/${crypto.randomUUID()}.${ext}`;const {error}=await db.storage.from(IMAGE_BUCKET).upload(path,file,{upsert:false,contentType:file.type});if(error)throw error;return db.storage.from(IMAGE_BUCKET).getPublicUrl(path).data.publicUrl}
 function openEditor(type){if(!requireLogin())return;$("editorType").value=type;$("editorTitle").textContent=type==="scenario"?"シナリオを投稿":type==="item"?"商品を出品":"トピックを投稿";$("entryTitleLabel").textContent=type==="post"?"トピックタイトル":"タイトル";$("entryDescriptionLabel").textContent=type==="post"?"本文":"説明・本文";$("systemField").hidden=type!=="scenario";$("priceField").hidden=type!=="item";$("imageField").hidden=type==="post";$("entryImage").value="";$("editorDialog").showModal()}
 $("newScenarioBtn").onclick=()=>openEditor("scenario");$("newItemBtn").onclick=()=>openEditor("item");$("newPostBtn").onclick=()=>openEditor("post");
-$("editorForm").onsubmit=async e=>{e.preventDefault();if(!requireLogin())return;const type=$("editorType").value;const title=$("entryTitle").value.trim(),description=$("entryDescription").value.trim(),file=$("entryImage").files[0];try{let image_url=await uploadImage(file);let table,payload;if(type==="scenario"){table="scenarios";payload={user_id:currentUser.id,title,description,system:$("entrySystem").value.trim()||"クトゥルフ神話TRPG",image_url}}else if(type==="item"){table="marketplace_items";payload={user_id:currentUser.id,title,description,price:Number($("entryPrice").value)||0,image_url}}else{table="forum_posts";payload={user_id:currentUser.id,title,content:description}}const {error}=await db.from(table).insert(payload);if(error)throw error;$("editorDialog").close();$("editorForm").reset();notice("投稿しました！");if(type==="scenario")loadScenarios();if(type==="item")loadItems();if(type==="post")loadForum();}catch(err){notice("投稿できませんでした: "+err.message,"error")}};
+$("editorForm").onsubmit=async e=>{e.preventDefault();if(!requireLogin())return;const type=$("editorType").value;const title=$("entryTitle").value.trim(),description=$("entryDescription").value.trim(),file=$("entryImage").files[0];try{let image_url=await uploadImage(file);let table,payload;if(type==="scenario"){table="scenarios";payload={user_id:currentUser.id,title,description,system:$("entrySystem").value.trim()||"クトゥルフ神話TRPG",image_url}}else if(type==="item"){table="marketplace_items";payload={user_id:currentUser.id,title,description,price:Number($("entryPrice").value)||0,image_url}}else{table="forum_posts";payload={user_id:currentUser.id,title,content:description}}const {error}=await db.from(table).insert(payload);if(error)throw error;$("editorDialog").close();$("editorForm").reset();notice("投稿しました！");if(type==="scenario")loadScenarios();if(type==="item")async function loadItems(){
+  const q=$("marketSearch")?.value?.trim()||"";
+
+  let req=db.from("marketplace_items")
+    .select("*")
+    .order("created_at",{ascending:false})
+    .limit(60);
+
+  if(q)req=req.ilike("title",`%${q}%`);
+
+  const {data,error}=await req;
+
+  if(error){
+    $("marketList").innerHTML=empty("読み込みエラー: "+error.message);
+    return;
+  }
+
+  $("marketList").innerHTML=data?.length
+    ? data.map(x=>{
+        const sold=!!x.sold_at;
+        const own=currentUser && x.user_id===currentUser.id;
+
+        let purchaseButton="";
+
+        if(sold){
+          purchaseButton='<span class="pill">売却済み</span>';
+        }else if(own){
+          purchaseButton='<span class="pill">自分の商品</span>';
+        }else{
+          purchaseButton=`
+            <button
+              onclick="purchaseItem('${x.id}')"
+              ${!currentUser?"disabled":""}>
+              購入する
+            </button>`;
+        }
+
+        return `
+          <article class="card">
+            ${imageHtml(x.image_url)}
+            <h3>${esc(x.title)}</h3>
+            <p class="price">
+              ${Number(x.price).toLocaleString("ja-JP")} $
+            </p>
+            <p class="muted postbody">${esc(x.description)}</p>
+            <div class="small muted">
+              ${new Date(x.created_at).toLocaleString("ja-JP")}
+            </div>
+            <div class="actions">${purchaseButton}</div>
+          </article>`;
+      }).join("")
+    : empty("商品はまだありません。最初の出品をしてみよう！");
+}window.purchaseItem=async function(itemId){
+  if(!requireLogin())return;
+
+  if(!confirm("この商品を購入しますか？"))return;
+
+  try{
+    const {error}=await db.rpc(
+      "purchase_marketplace_item",
+      {p_item_id:itemId}
+    );
+
+    if(error)throw error;
+
+    await refreshWallet();
+    await loadItems();
+
+    notice("購入しました！");
+  }catch(err){
+    notice("購入できませんでした: "+err.message,"error");
+  }
+};;if(type==="post")loadForum();}catch(err){notice("投稿できませんでした: "+err.message,"error")}};
 function imageHtml(url){return url?`<img class="itemimg" src="${esc(url)}" alt="">`:""}
 function empty(msg){return `<div class="empty">${esc(msg)}</div>`}
 async function loadScenarios(){const q=$("scenarioSearch")?.value?.trim()||"";let req=db.from("scenarios").select("*").order("created_at",{ascending:false}).limit(60);if(q)req=req.or(`title.ilike.%${q}%,system.ilike.%${q}%`);const {data,error}=await req;const html=error?empty("読み込みエラー: "+error.message):(data?.length?data.map(x=>`<article class="card">${imageHtml(x.image_url)}<span class="pill">${esc(x.system)}</span><h3>${esc(x.title)}</h3><p class="muted postbody">${esc(x.description)}</p><div class="small muted">${new Date(x.created_at).toLocaleString("ja-JP")}</div></article>`).join(""):empty("まだシナリオがありません。最初の投稿をしてみよう！"));$("scenarioList").innerHTML=html;$("homeScenarios").innerHTML=(data||[]).slice(0,3).map(x=>`<article class="card"><h3>${esc(x.title)}</h3><span class="pill">${esc(x.system)}</span><p class="muted">${esc(x.description.slice(0,100))}</p></article>`).join("")||empty("シナリオを募集中！")}
